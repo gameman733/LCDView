@@ -11,19 +11,28 @@ namespace LCDView
 {
     public partial class LCDView : UserControl
     {
-        private bool SizeChanged = false;
-        private Rectangle[][] PixelArray;
+        private bool LCDSizeChanged = false;
+        private Rectangle[,] PixelArray;
+        //Not sure if this is going to work out. Colors are control by the pen. We also have no way of knowing if a pixel has been set. This might solve both issues..
+        private Color[,] ColorArray;
         public LCDView()
         {
             InitializeComponent();
         }
 
+
         private void LCDView_Load(object sender, EventArgs e)
         {
             //Set Default Values
             XPixels = 64;
-            YPixels = 64; 
-            Paint += new PaintEventHandler(LCDView_Paint);
+            YPixels = 64;
+            PixelArray = new Rectangle[XPixels, YPixels];
+            ColorArray = new Color[XPixels, YPixels];
+            SetPixel(0, 0, Color.Green);
+            SetPixel(1, 1, Color.Red);
+
+            //Paint += new PaintEventHandler(LCDView_Paint);
+            Paint += new PaintEventHandler(RePaint);
         }
 
         void LCDView_Paint(object sender, PaintEventArgs e)
@@ -49,7 +58,7 @@ namespace LCDView
             set
             {
                 _XPixels = value;
-                SizeChanged = true;
+                LCDSizeChanged = true;
                 Refresh();
             }
         }
@@ -63,7 +72,7 @@ namespace LCDView
             set
             {
                 _YPixels = value;
-                SizeChanged = true;
+                LCDSizeChanged = true;
                 Refresh();
             }
         }
@@ -74,76 +83,77 @@ namespace LCDView
             {
                 for (int j = 0; j < YPixels; j++)
                 {
-                    SetPixel(i, j, System.Drawing.Color.Black);
+                    ColorArray = new Color[XPixels, YPixels];
+                    Invalidate();
+                    //SetPixel(i, j, System.Drawing.Color.Black);
                 }
             }
         }
 
 
-        private void RePaint()
+        private void RePaint(object sender, PaintEventArgs e)
         {
-            if (SizeChanged)
+            //If the control height/width changes, we want to redraw the entire screen. By default, only the area added/removed is redrawn. 
+            
+            if (e.ClipRectangle.X != 0 || e.ClipRectangle.Y != 0)
             {
-                //Rebuild PixelArray
-                SizeChanged = false;
+                Invalidate();
+                return;
             }
+            if (LCDSizeChanged)
+            {
+                UpdateArraySize();
+                LCDSizeChanged = false;
+            }
+            for (int i = 0; i < PixelArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < PixelArray.GetLength(1); j++)
+                {
+                    Rectangle pixel = PixelArray[i,j];
+                    if (pixel == null)
+                    {
+                        pixel = new Rectangle();
+                    }
+                    pixel.X = (Width / XPixels) * i;
+                    pixel.Y = (Height / YPixels) * j;
+                    pixel.Height = Height / YPixels;
+                    pixel.Width = Width / XPixels;
+                    if (ColorArray[i,j] == null)
+                    {
+                        Pen pen = new Pen(Control.DefaultBackColor);
+                        e.Graphics.FillRectangle(pen.Brush, pixel);
+                    }
+                    else
+                    {
+                        Pen pen = new Pen(ColorArray[i,j]);
+                        e.Graphics.FillRectangle(pen.Brush, pixel);
+                    }
+                }
 
-            Refresh();
+            }
+            //Refresh();
         }
 
         private void UpdateArraySize()
         {
             Rectangle[,] newPixelArray = new Rectangle[XPixels,YPixels];
-            foreach (Rectangle[] x in PixelArray[0])
+
+
+            for (int i = 0; i < (newPixelArray.GetLength(0) < PixelArray.GetLength(0) ? newPixelArray.GetLength(0) : PixelArray.GetLength(0)); i++)
             {
-                x = new Rectangle[YPixels]();
+                for (int j = 0; j < (newPixelArray.GetLength(1) < PixelArray.GetLength(1) ? newPixelArray.GetLength(1) : PixelArray.GetLength(1)); j++)
+                {
+                    newPixelArray[i, j] = PixelArray[i, j];
+                }
             }
 
-            for (int i = 0; i < (newPixelArray.Length < PixelArray.Length ? newPixelArray.Length:PixelArray.Length) ; i++)
-            {
-                
-            }
-
-
-            //if (PixelArray.GetLength(0) > XPixels)
-            //{
-            //    if (PixelArray.GetLength(1) > YPixels)
-            //    {
-            //        foreach (Rectangle[] x in PixelArray[0])
-            //        {
-            //            x = new Rectangle[YPixels]();
-            //            foreach (Rectangle y in x)
-            //            {
-                    		 
-            //            }
-            //        }   
-            //    }
-            //    else
-            //    {
-
-            //    }
-            //}
-            //else
-            //{
-
-            //}
+            PixelArray = newPixelArray;
         }
 
         private void SetPixel(int i, int j, Color color)
         {
-            //PixelArray
-            
-            
-            
-            
-            Pen blackPen = new Pen(Color.Black);
-            
-            return;
-            System.Drawing.Rectangle pixel = new Rectangle();
-            pixel.Width = Width / XPixels;
-            pixel.Height = Height / YPixels;
-            
-            throw new NotImplementedException();
+            ColorArray[i, j] = color;
+            Invalidate();
         }
     }
 }
