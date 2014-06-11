@@ -15,5 +15,16 @@ namespace LCDViewTest
         {
             InitializeComponent();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            lcdView1.XPixels = Convert.ToInt32(txtX.Text);
+            lcdView1.YPixels = Convert.ToInt32(txtY.Text);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            lcdView1.SetPixel(Convert.ToInt32(txtSetX.Text), Convert.ToInt32(txtSetY.Text),Color.Crimson);
+        }
     }
 }

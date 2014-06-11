@@ -150,10 +150,27 @@ namespace LCDView
             PixelArray = newPixelArray;
         }
 
-        private void SetPixel(int i, int j, Color color)
+        public bool SetPixel(int i, int j, Color color)
         {
+            bool ReturnValue = false;
+            if (ColorArray[i, j] != null)
+            {
+                ReturnValue = true;
+            }
             ColorArray[i, j] = color;
             Invalidate();
+            return ReturnValue;
+        }
+        public bool SetPixel(int i, int j)
+        {
+            bool ReturnValue = false;
+            if (ColorArray[i,j] != null)
+            {
+                ReturnValue = true;
+            }
+            ColorArray[i, j] = Color.Black;
+            Invalidate();
+            return ReturnValue;
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LCDView", "LCDView\LCDView.csproj", "{DE60D298-25D0-4EA3-934E-3B2E74358A2F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LCDViewTest", "LCDViewTest\LCDViewTest.csproj", "{76DFF2C3-8138-491B-B16A-84D6B1ADDC84}"
